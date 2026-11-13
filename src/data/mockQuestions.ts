@@ -1,0 +1,146 @@
+export interface ExamQuestion {
+  id: number;
+  section: string;
+  question: string;
+  questionHindi: string;
+  options: string[];
+  optionsHindi: string[];
+  correctOption: number; // 0-indexed
+  explanation: string;
+  marks: number;
+  negativeMarks: number;
+}
+
+export const samplePracticeQuestions: ExamQuestion[] = [
+  {
+    id: 1,
+    section: "General Intelligence & Reasoning",
+    question: "Select the related number from the given alternatives: 12 : 144 :: 15 : ?",
+    questionHindi: "दिए गए विकल्पों में से संबंधित संख्या का चयन करें: 12 : 144 :: 15 : ?",
+    options: ["225", "215", "195", "250"],
+    optionsHindi: ["225", "215", "195", "250"],
+    correctOption: 0,
+    explanation: "Pattern: The square of the first number gives the second number (12^2 = 144). Similarly, 15^2 = 225. Hence, 225 is the correct answer.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 2,
+    section: "General Intelligence & Reasoning",
+    question: "In a certain code language, if 'ROAD' is coded as 'URDG', how will 'SWAN' be coded in that language?",
+    questionHindi: "यदि किसी कूट भाषा में 'ROAD' को 'URDG' लिखा जाता है, तो 'SWAN' को क्या लिखा जाएगा?",
+    options: ["VZDQ", "UXDQ", "VXDQ", "VZCQ"],
+    optionsHindi: ["VZDQ", "UXDQ", "VXDQ", "VZCQ"],
+    correctOption: 0,
+    explanation: "Pattern: Each letter is shifted by +3 forward (R+3=U, O+3=R, A+3=D, D+3=G). Therefore, SWAN => S+3=V, W+3=Z, A+3=D, N+3=Q (VZDQ).",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 3,
+    section: "General Intelligence & Reasoning",
+    question: "Find the missing number in the following series: 2, 6, 12, 20, 30, ?",
+    questionHindi: "दी गई श्रृंखला में लुप्त संख्या ज्ञात करें: 2, 6, 12, 20, 30, ?",
+    options: ["42", "40", "44", "38"],
+    optionsHindi: ["42", "40", "44", "38"],
+    correctOption: 0,
+    explanation: "Difference pattern: +4, +6, +8, +10, +12. Therefore, next term = 30 + 12 = 42.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 4,
+    section: "General Awareness",
+    question: "Which Schedule of the Indian Constitution lists the names of States and Union Territories and their territorial extent?",
+    questionHindi: "भारतीय संविधान की किस अनुसूची में राज्यों और केंद्र शासित प्रदेशों का उल्लेख है?",
+    options: ["First Schedule", "Second Schedule", "Third Schedule", "Seventh Schedule"],
+    optionsHindi: ["पहली अनुसूची", "दूसरी अनुसूची", "तीसरी अनुसूची", "सातवीं अनुसूची"],
+    correctOption: 0,
+    explanation: "The First Schedule of the Indian Constitution contains the names of States and Union Territories along with their territorial jurisdictions.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 5,
+    section: "General Awareness",
+    question: "In which present-day Indian state is 'Lothal', the prominent port city of the Harappan civilization, located?",
+    questionHindi: "हड़प्पा सभ्यता का प्रमुख बंदरगाह नगर 'लोथल' किस राज्य में स्थित है?",
+    options: ["Gujarat", "Rajasthan", "Punjab", "Haryana"],
+    optionsHindi: ["गुजरात", "राजस्थान", "पंजाब", "हरियाणा"],
+    correctOption: 0,
+    explanation: "Lothal was one of the southernmost cities of the ancient Indus Valley civilization, located in the Bhal region of Gujarat on the banks of river Bhogavo.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 6,
+    section: "General Awareness",
+    question: "Which instrument is used to measure blood pressure in the human body?",
+    questionHindi: "मानव शरीर में रक्तचाप मापने के लिए किस उपकरण का उपयोग किया जाता है?",
+    options: ["Sphygmomanometer", "Barometer", "Thermometer", "Lactometer"],
+    optionsHindi: ["स्फिग्मोमैनोमीटर", "बैरोमीटर", "थर्मामीटर", "लैक्टोमीटर"],
+    correctOption: 0,
+    explanation: "A sphygmomanometer, commonly known as a blood pressure monitor, is used to measure arterial blood pressure.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 7,
+    section: "Quantitative Aptitude",
+    question: "By selling an article for $720, a shopkeeper gains 20%. Find the Cost Price of the article.",
+    questionHindi: "एक वस्तु को ₹720 में बेचने पर 20% लाभ होता है। क्रय मूल्य ज्ञात कीजिए।",
+    options: ["$600", "$580", "$640", "$650"],
+    optionsHindi: ["₹600", "₹580", "₹640", "₹650"],
+    correctOption: 0,
+    explanation: "Cost Price (CP) = Selling Price * 100 / (100 + Profit%) = 720 * 100 / 120 = $600.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 8,
+    section: "Quantitative Aptitude",
+    question: "If A can complete a work in 12 days and B can complete it in 24 days, in how many days can both complete it together?",
+    questionHindi: "यदि A किसी कार्य को 12 दिनों में और B 24 दिनों में करता है, तो दोनों मिलकर कितने दिनों में करेंगे?",
+    options: ["8 Days", "6 Days", "9 Days", "10 Days"],
+    optionsHindi: ["8 दिन", "6 दिन", "9 दिन", "10 दिन"],
+    correctOption: 0,
+    explanation: "Combined 1-day work = 1/12 + 1/24 = 3/24 = 1/8. Hence, together they take 8 days.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 9,
+    section: "English Comprehension",
+    question: "Select the most appropriate ANTONYM of the word: 'TRANSPARENT'",
+    questionHindi: "Select the most appropriate ANTONYM of: 'TRANSPARENT'",
+    options: ["Opaque", "Clear", "Lucid", "Bright"],
+    optionsHindi: ["Opaque", "Clear", "Lucid", "Bright"],
+    correctOption: 0,
+    explanation: "'Transparent' means allowing light to pass through clearly. Its direct opposite is 'Opaque' (not allowing light to pass through).",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+  {
+    id: 10,
+    section: "English Comprehension",
+    question: "Select the correct meaning of the idiom: 'To bite the bullet'",
+    questionHindi: "Select the correct meaning of the idiom: 'To bite the bullet'",
+    options: [
+      "To face a difficult situation with courage",
+      "To be shot by a bullet",
+      "To refuse to accept a mistake",
+      "To express extreme anger",
+    ],
+    optionsHindi: [
+      "To face a difficult situation with courage",
+      "To be shot by a bullet",
+      "To refuse to accept a mistake",
+      "To express extreme anger",
+    ],
+    correctOption: 0,
+    explanation: "'To bite the bullet' means to bravely endure a grim or painful situation that is unavoidable.",
+    marks: 2,
+    negativeMarks: 0.5,
+  },
+];
+
