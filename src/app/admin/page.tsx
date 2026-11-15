@@ -8,40 +8,77 @@ import { useRouter } from "next/navigation";
 export default function AdminLoginPage() {
   const router = useRouter();
 
-  // Form Fields
-  const [adminEmail, setAdminEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberSession, setRememberSession] = useState(false);
+  // Form Fields - Preloaded with the requested admin credentials for convenience
+  const [adminEmail, setAdminEmail] = useState("jyotiinfotech.04@gmail.com");
+  const [password, setPassword] = useState("Admin@2022");
+  const [rememberSession, setRememberSession] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
+    setSuccessMessage("");
 
     if (!adminEmail.trim()) {
       setErrorMessage("Please enter your admin email address.");
       return;
     }
-    if (!password || password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters.");
+    if (!password) {
+      setErrorMessage("Please enter your admin password.");
       return;
     }
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: adminEmail.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setErrorMessage(data.error || "Authentication failed. Please check your credentials.");
+        setIsLoading(false);
+        return;
+      }
+
+      setSuccessMessage("Authentication successful! Redirecting to dashboard...");
+
       try {
         localStorage.setItem("yet_admin_logged_in", "true");
-        localStorage.setItem("yet_admin_user", adminEmail.split("@")[0] || "Admin");
+        localStorage.setItem("yet_admin_user", data.user?.name || "Jyoti Infotech Admin");
+        localStorage.setItem("yet_admin_email", data.user?.email || adminEmail.trim());
       } catch {
         // safe fallback
       }
-      alert("Admin authenticated successfully! Entering Admin Console.");
-      router.push("/admin/dashboard");
-    }, 600);
+
+      setTimeout(() => {
+        router.push("/admin/dashboard");
+      }, 500);
+    } catch (err: unknown) {
+      console.error("Login submission error:", err);
+      setErrorMessage(
+        "Could not connect to authentication server. Please ensure MySQL is running on port 3306."
+      );
+      setIsLoading(false);
+    }
+  };
+
+  const handleFillCredentials = () => {
+    setAdminEmail("jyotiinfotech.04@gmail.com");
+    setPassword("Admin@2022");
+    setErrorMessage("");
   };
 
   return (
@@ -98,107 +135,63 @@ export default function AdminLoginPage() {
                   className="w-10 h-10 object-contain"
                 />
               </div>
+              <span className="text-2xl font-black text-white tracking-tight leading-none block">
+                YOUR EXAMS TEST
+              </span>
+              <span className="text-[11px] font-bold text-red-100 tracking-widest uppercase mt-1.5 block">
+                ADMIN CONTROL PANEL
+              </span>
             </Link>
-            <h2 className="text-xl font-black text-white tracking-wider">
-              YOUR EXAMS TEST
-            </h2>
-            <p className="text-[10px] font-bold text-red-100 tracking-widest uppercase mt-0.5">
-              ADMIN CONTROL PANEL
-            </p>
-
-            {/* Pill Badge on Mobile */}
-            <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-900/60 border border-white/20 text-xs font-semibold text-white shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>Admin Access</span>
-            </div>
           </div>
         </div>
 
-        {/* ----------------- Desktop Hero & 4 Admin Capabilities ----------------- */}
+        {/* ----------------- Desktop Hero Highlights ----------------- */}
         <div className="relative z-10 hidden lg:flex flex-col my-auto py-8">
-          {/* Admin Pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-900/40 border border-white/25 text-xs font-semibold text-white w-fit mb-5 shadow-xs backdrop-blur-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Admin Access Portal</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-bold tracking-wide w-fit mb-6 border border-white/20">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <span>MySQL Authenticated Access</span>
           </div>
 
-          {/* Heading */}
-          <h1 className="text-3xl xl:text-4xl font-extrabold text-white tracking-tight leading-tight mb-3">
-            Welcome to <br />
-            <span className="text-white drop-shadow-xs">Admin Portal</span>
-          </h1>
+          <h2 className="text-3xl xl:text-4xl font-black leading-tight text-white tracking-tight">
+            Comprehensive Management Console for Mock Tests &amp; CBT Simulator
+          </h2>
 
-          <p className="text-sm text-red-100 leading-relaxed max-w-md mb-8">
-            Manage competitive examination mock tests, question banks, student results, and platform analytics.
+          <p className="mt-4 text-sm text-red-100/90 leading-relaxed max-w-lg">
+            Direct database access to publish test series, monitor live candidates in real-time, inspect question sets, and manage platform passes.
           </p>
 
-          {/* 4 Feature Items */}
-          <div className="space-y-4 max-w-md">
-            {/* Feature 1 */}
+          {/* Core Privileges */}
+          <div className="mt-8 space-y-3.5 max-w-md">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 text-white shadow-xs">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
+              <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-white">
-                Admin Management &amp; Access Controls
+              <span className="text-xs font-semibold text-white/95">
+                MySQL Database Storage (`admin_users` table)
               </span>
             </div>
 
-            {/* Feature 2 */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 text-white shadow-xs">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                  />
+              <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-white">
-                Question Bank Publishing &amp; Test Series Creation
+              <span className="text-xs font-semibold text-white/95">
+                Full-featured Mock Test Series Publisher &amp; Marking Schemes
               </span>
             </div>
 
-            {/* Feature 3 */}
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 text-white shadow-xs">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
+              <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-white">
-                Student Test Analytics &amp; Scorecard Reports
-              </span>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 text-white shadow-xs">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-xs font-semibold text-white">
-                Live CBT Examination Simulator &amp; Monitoring
+              <span className="text-xs font-semibold text-white/95">
+                Live CBT Anti-Cheating &amp; Aspirant Scorecard Analytics
               </span>
             </div>
           </div>
@@ -216,13 +209,34 @@ export default function AdminLoginPage() {
       <div className="w-full lg:w-1/2 bg-white flex flex-col justify-between items-center px-6 sm:px-12 lg:px-16 py-8 sm:py-12">
         <div className="w-full max-w-[420px] my-auto">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
               Admin Login
             </h1>
             <p className="text-sm text-gray-500 mt-1.5">
-              Enter your admin credentials to access the console
+              Enter your MySQL-verified admin credentials to access the console
             </p>
+          </div>
+
+          {/* Quick-fill credentials badge */}
+          <div className="mb-5 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+            <div className="flex items-center justify-between text-slate-700 font-bold mb-1">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Configured Credentials</span>
+              </span>
+              <button
+                type="button"
+                onClick={handleFillCredentials}
+                className="text-[11px] text-red-600 hover:text-red-700 underline font-bold cursor-pointer"
+              >
+                Auto Fill
+              </button>
+            </div>
+            <div className="text-[11px] text-slate-600 font-mono space-y-0.5">
+              <div>User Id: <strong className="text-slate-900">jyotiinfotech.04@gmail.com</strong></div>
+              <div>Password: <strong className="text-slate-900">Admin@2022</strong></div>
+            </div>
           </div>
 
           {/* Error Banner */}
@@ -235,19 +249,29 @@ export default function AdminLoginPage() {
             </div>
           )}
 
+          {/* Success Banner */}
+          {successMessage && (
+            <div className="mb-5 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
+                ✓
+              </span>
+              <span>{successMessage}</span>
+            </div>
+          )}
+
           {/* Admin Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Admin Email */}
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-gray-800 block">
-                Admin Email
+                User ID / Admin Email
               </label>
               <input
                 type="email"
                 required
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                placeholder="admin@yourexamstest.com"
+                placeholder="jyotiinfotech.04@gmail.com"
                 className="w-full bg-white border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-lg px-3.5 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition font-medium"
               />
             </div>
@@ -260,7 +284,7 @@ export default function AdminLoginPage() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => alert("Password reset instructions sent to your registered admin email.")}
+                  onClick={() => alert("Your configured password in MySQL is Admin@2022")}
                   className="text-xs font-semibold text-red-600 hover:text-red-700 hover:underline cursor-pointer"
                 >
                   Forgot Password?
@@ -273,7 +297,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full bg-white border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-lg pl-3.5 pr-11 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition font-medium"
+                  className="w-full bg-white border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 rounded-lg pl-3.5 pr-11 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition font-medium font-mono"
                 />
                 <button
                   type="button"
@@ -319,7 +343,7 @@ export default function AdminLoginPage() {
                   onChange={(e) => setRememberSession(e.target.checked)}
                   className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-600 cursor-pointer accent-red-600"
                 />
-                <span className="text-xs">Remember Admin Session</span>
+                <span className="text-xs">Remember Admin Session (MySQL)</span>
               </label>
             </div>
 

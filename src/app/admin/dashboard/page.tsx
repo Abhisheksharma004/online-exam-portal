@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -63,6 +63,51 @@ export default function AdminDashboardPage() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+
+  // Admin User Profile (loaded dynamically from MySQL session)
+  const [adminUser, setAdminUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cachedEmail = localStorage.getItem("yet_admin_email");
+        const cachedName = localStorage.getItem("yet_admin_user");
+        if (cachedEmail || cachedName) {
+          return {
+            name: cachedName || "Jyoti Infotech Admin",
+            email: cachedEmail || "jyotiinfotech.04@gmail.com",
+            role: "Super Admin",
+          };
+        }
+      } catch {
+        // safe fallback
+      }
+    }
+    return {
+      name: "Jyoti Infotech Admin",
+      email: "jyotiinfotech.04@gmail.com",
+      role: "Super Admin",
+    };
+  });
+
+  useEffect(() => {
+    // Fetch authenticated admin profile from MySQL session API
+    fetch("/api/admin/me")
+      .then((res) => {
+        if (res.ok) return res.json();
+        return null;
+      })
+      .then((data) => {
+        if (data && data.authenticated && data.user) {
+          setAdminUser({
+            name: data.user.name || "Jyoti Infotech Admin",
+            email: data.user.email || "jyotiinfotech.04@gmail.com",
+            role: data.user.role === "super_admin" ? "Super Admin" : data.user.role,
+          });
+        }
+      })
+      .catch(() => {
+        // network or server error fallback
+      });
+  }, []);
 
   // Search & Filters for Mock Tests
   const [testSearch, setTestSearch] = useState("");
@@ -250,10 +295,16 @@ export default function AdminDashboardPage() {
   ]);
 
   // Handlers
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/logout", { method: "POST" });
+    } catch {
+      // safe fallback
+    }
     try {
       localStorage.removeItem("yet_admin_logged_in");
       localStorage.removeItem("yet_admin_user");
+      localStorage.removeItem("yet_admin_email");
     } catch {
       // safe fallback
     }
@@ -479,11 +530,11 @@ export default function AdminDashboardPage() {
                   className="flex items-center gap-2 p-1 rounded-md border border-gray-200 hover:border-red-200 hover:bg-red-50 transition cursor-pointer"
                 >
                   <div className="w-7 h-7 rounded-md bg-gradient-to-br from-red-600 to-red-800 text-white font-black text-xs flex items-center justify-center shadow-xs">
-                    AD
+                    {adminUser.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="hidden xl:block text-left text-xs pr-1">
-                    <div className="font-bold text-gray-900 leading-tight">Exam Controller</div>
-                    <div className="text-[10px] text-gray-500">Super Admin</div>
+                    <div className="font-bold text-gray-900 leading-tight max-w-[150px] truncate">{adminUser.name}</div>
+                    <div className="text-[10px] text-gray-500">{adminUser.role}</div>
                   </div>
                   <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -491,10 +542,10 @@ export default function AdminDashboardPage() {
                 </button>
 
                 {adminMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl py-2 px-3 z-50 animate-in fade-in zoom-in-95 duration-100 text-xs">
+                  <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl py-2 px-3 z-50 animate-in fade-in zoom-in-95 duration-100 text-xs">
                     <div className="pb-2 border-b border-gray-100">
-                      <div className="font-bold text-gray-900">Admin Controller</div>
-                      <div className="text-[11px] text-gray-500">admin@yourexamstest.com</div>
+                      <div className="font-bold text-gray-900 truncate">{adminUser.name}</div>
+                      <div className="text-[11px] text-gray-500 truncate">{adminUser.email}</div>
                     </div>
                     <div className="py-2 space-y-1">
                       <button
